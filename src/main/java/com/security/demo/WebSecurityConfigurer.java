@@ -1,5 +1,7 @@
 package com.security.demo;
 
+import com.security.demo.service.MyUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -17,10 +19,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
+	@Autowired
+	private MyUserDetailsService userDetailsService;
+
 	@Override
 	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
 		auth.inMemoryAuthentication()
 			.withUser("powerfish0813@gmail.com").password(passwordEncoder().encode("123")).roles("ADMIN");
+		auth.userDetailsService(userDetailsService);
+
 	}
 
 	@Override

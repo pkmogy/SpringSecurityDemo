@@ -21,7 +21,7 @@
 	</xsl:template>
 
 	<xsl:template match="document">
-		<FORM action="/">
+		<FORM action="" method="POST">
 			<DIV class="form-group">
 				<LABEL for="nickName">姓名</LABEL>
 				<INPUT type="text" class="form-control" name="nickName" id="nickName" placeholder="nickName"/>
@@ -33,6 +33,10 @@
 			<DIV class="form-group">
 				<LABEL for="password">密碼</LABEL>
 				<INPUT type="password" class="form-control" id="password" placeholder="Password" name="password"/>
+			</DIV>
+			<DIV class="form-group">
+				<LABEL for="password">再次輸入密碼</LABEL>
+				<INPUT type="password" class="form-control" id="password" placeholder="Password" name="matchingPassword"/>
 			</DIV>
 			<BUTTON type="submit" class="btn btn-primary">Submit</BUTTON>
 		</FORM>
