@@ -1,6 +1,6 @@
 package com.security.demo.service;
 
-import com.security.demo.TalentRepository;
+import com.security.demo.repository.TalentRepository;
 import com.security.demo.entity.Talent;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +36,8 @@ public class MyUserDetailsService implements UserDetailsService {
 		boolean accountNonExpired = true;
 		boolean credentialsNonExpired = true;
 		boolean accountNonLocked = true;
-		return new org.springframework.security.core.userdetails.User(talent.getEmail(),
-			talent.getShadow().toLowerCase(), enabled, accountNonExpired,
+		return new org.springframework.security.core.userdetails.User(talent.getEmail().toLowerCase(),
+			talent.getShadow(), enabled, accountNonExpired,
 			credentialsNonExpired, accountNonLocked,
 			getAuthorities(talent.getRole()));
 	}

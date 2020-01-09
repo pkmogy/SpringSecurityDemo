@@ -1,4 +1,4 @@
-package com.security.demo;
+package com.security.demo.repository;
 
 import com.security.demo.entity.Talent;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -35,6 +35,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 		httpSecurity.
 			authorizeRequests().
 			antMatchers("/registration/").permitAll(). // login.css 允許所有人請求
+			antMatchers("/registration/confirm").permitAll().
 			anyRequest().authenticated(). // 其它全部的路徑都得經過使用者驗證後才可以存取
 			and().
 			formLogin(). // 使用 Form Login 登入驗證

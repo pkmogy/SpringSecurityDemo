@@ -18,11 +18,11 @@ import javax.validation.constraints.NotNull;
 
 /**
  * 會員
- * 
+ *
  * @author 李羅
  */
 @Entity
-@Table(name = "talent", catalog = "securityscl", schema = "public", uniqueConstraints = {
+@Table(catalog = "securityscl", schema = "public", name = "talent", uniqueConstraints = {
 	@UniqueConstraint(columnNames = {"identifier"})
 	, @UniqueConstraint(columnNames = {"live_id"})
 	, @UniqueConstraint(columnNames = {"google_id"})
@@ -102,14 +102,19 @@ public class Talent implements Serializable {
 	@Column(name = "required_to_change_shadow", nullable = false)
 	@NotNull
 	private boolean requiredToChangeShadow;
-	
+
 	@Column(name = "role")
 	private String role;
+
+	@Column(name = "enabled")
+	private boolean enabled;
 
 	/**
 	 * 預設建構子
 	 */
 	public Talent() {
+		super();
+		this.enabled = false;
 		this.identifier = UUID.randomUUID();
 	}
 
@@ -360,7 +365,7 @@ public class Talent implements Serializable {
 	public void setRequiredToChangeShadow(boolean requiredToChangeShadow) {
 		this.requiredToChangeShadow = requiredToChangeShadow;
 	}
-	
+
 	/**
 	 * @return 權限
 	 */
@@ -374,8 +379,20 @@ public class Talent implements Serializable {
 	public void setRole(String role) {
 		this.role = role;
 	}
-	
-	
+
+	/**
+	 * @return 已啟用
+	 */
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	/**
+	 * @param enabled 已啟用
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	@Override
 	public int hashCode() {

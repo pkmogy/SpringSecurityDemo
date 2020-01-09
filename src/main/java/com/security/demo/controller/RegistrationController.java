@@ -2,11 +2,25 @@ package com.security.demo.controller;
 
 import com.security.demo.dto.RegistrationDto;
 import com.security.demo.entity.Talent;
+import com.security.demo.entity.VerificationToken;
+import com.security.demo.event.OnRegistrationCompleteEvent;
+import com.security.demo.repository.TalentRepository;
+import com.security.demo.service.IUserService;
 import com.security.demo.service.TalentService;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 import javax.validation.Valid;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -30,6 +44,22 @@ public class RegistrationController {
 	@Autowired
 	TalentService talentService;
 
+	@Autowired
+	TalentRepository talentRepository;
+
+	@Autowired
+	private IUserService iUserService;
+
+	@Autowired
+	ApplicationEventPublisher applicationEventPublisher;
+
+	/**
+	 * 建立會員
+	 *
+	 * @param registrationDto 註冊DTO
+	 * @param result 驗證是否正確
+	 * @return
+	 */
 	private Talent createUserAccount(RegistrationDto registrationDto, BindingResult result) {
 		Talent registered = null;
 		try {
@@ -40,6 +70,15 @@ public class RegistrationController {
 		return registered;
 	}
 
+	/**
+	 * 取得註冊DTO
+	 *
+	 * @param nickName 暱稱
+	 * @param email 信箱
+	 * @param password 密碼
+	 * @param matchingPassword 再輸入密碼
+	 * @return
+	 */
 	public RegistrationDto testModeelAttribute(@RequestParam("nickName") String nickName, @RequestParam("email") String email, @RequestParam("password") String password, @RequestParam("matchingPassword") String matchingPassword) {
 		RegistrationDto registrationDto = new RegistrationDto();
 		registrationDto.setNickName(nickName);
@@ -49,6 +88,10 @@ public class RegistrationController {
 		return registrationDto;
 	}
 
+	/**
+	 * @return 註冊頁面
+	 * @throws Exception
+	 */
 	@GetMapping("/")
 	public ModelAndView index() throws Exception {
 		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
@@ -57,6 +100,16 @@ public class RegistrationController {
 		return modelAndView;
 	}
 
+	/**
+	 * 註冊會員
+	 *
+	 * @param registrationDto 會員資料驗證
+	 * @param result 驗證是否正確
+	 * @param request
+	 * @param errors
+	 * @return
+	 * @throws Exception
+	 */
 	@PostMapping("/")
 	public ModelAndView registerUserAccount(@ModelAttribute("testModeelAttribute") @Valid RegistrationDto registrationDto, BindingResult result, WebRequest request, Errors errors) throws Exception {
 		Talent talent = new Talent();
@@ -71,8 +124,44 @@ public class RegistrationController {
 			ModelAndView modelAndView = new ModelAndView("registrations");
 			modelAndView.getModelMap().addAttribute(new DOMSource(document));
 			return modelAndView;
-		} else {
-			return index();
 		}
+		try {
+			String appUrl = request.getContextPath();
+			applicationEventPublisher.publishEvent(new OnRegistrationCompleteEvent(talent, request.getLocale(), appUrl));
+		} catch (Exception me) {
+			System.out.print(me);
+			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
+			ModelAndView modelAndView = new ModelAndView("registrations111");
+			modelAndView.getModelMap().addAttribute(new DOMSource(document));
+			return modelAndView;
+		}
+		return index();
+	}
+
+	@GetMapping("/confirm")
+	public ModelAndView confirmRegistration(WebRequest request, @RequestParam("token") UUID token) throws Exception {
+
+		Locale locale = request.getLocale();
+
+		VerificationToken verificationToken = iUserService.getVerificationToken(token);
+		if (verificationToken == null) {
+			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
+			ModelAndView modelAndView = new ModelAndView("registrations");
+			modelAndView.getModelMap().addAttribute(new DOMSource(document));
+			return modelAndView;
+		}
+
+		Talent talent = verificationToken.getTalent();
+//		Calendar cal = Calendar.getInstance();
+//		if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+//			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
+//			ModelAndView modelAndView = new ModelAndView("registrations111");
+//			modelAndView.getModelMap().addAttribute(new DOMSource(document));
+//			return modelAndView;
+//		}
+
+		talent.setEnabled(true);
+		iUserService.saveRegisteredUser(talent);
+		return index();
 	}
 }

@@ -1,7 +1,6 @@
 package com.security.demo.dto;
 
 import com.security.demo.validator.PasswordMatches;
-import com.security.demo.validator.ValidEmail;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
