@@ -26,6 +26,10 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
 		auth.inMemoryAuthentication()
 			.withUser("powerfish0813@gmail.com").password(passwordEncoder().encode("123")).roles("ADMIN");
+		auth.inMemoryAuthentication()
+			.withUser("rationality0@gmail.com").password(passwordEncoder().encode("123")).roles("USER");
+		auth.inMemoryAuthentication()
+			.withUser("ppp123@gmail.com").password(passwordEncoder().encode("123")).roles("SOMEONE");
 		auth.userDetailsService(userDetailsService);
 
 	}
@@ -36,7 +40,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 			authorizeRequests().
 			antMatchers("/registration/", "/registration/confirm", "/registration/resendToken", "/talent/forgetPassword").permitAll(). // 允許所有人請求
 			//antMatchers().hasAuthority("CHANGE_PASSWORD_PRIVILEGE").
-			anyRequest().authenticated(). // 其它全部的路徑都得經過使用者驗證後才可以存取
+			anyRequest().hasAnyRole("ADMIN", "USER"). // 其它全部的路徑都得經過使用者驗證後才可以存取
 			and().
 			formLogin(). // 使用 Form Login 登入驗證
 			permitAll(). // 允許所有人請求
