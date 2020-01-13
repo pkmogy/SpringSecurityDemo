@@ -1,11 +1,9 @@
 package com.security.demo.entity;
 
-import static com.oracle.jrockit.jfr.ContentType.Timestamp;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.UUID;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -26,10 +23,10 @@ import javax.validation.constraints.NotNull;
  * @author 李羅
  */
 @Entity
-@Table(catalog = "securityscl", schema = "public", name = "verification_token", uniqueConstraints = {
-	@UniqueConstraint(columnNames = {"token"})
+@Table(catalog = "securityscl", schema = "public", name = "email_verification", uniqueConstraints = {
+	@UniqueConstraint(columnNames = {"someone"})
 })
-public class VerificationToken implements Serializable {
+public class EmailVerification implements Serializable {
 
 	private static final long serialVersionUID = -1899028127932162552L;
 	private static final int EXPIRATION = 60 * 24;
@@ -41,19 +38,17 @@ public class VerificationToken implements Serializable {
 	private Long id;
 
 	@Basic(optional = false)
-	@Column(nullable = false)
-	@Lob
+	@Column(name = "verification_code", nullable = false)
 	@NotNull
-	@org.hibernate.annotations.Type(type = "pg-uuid")
-	private UUID token;
+	private String verificationCode;
 
-	@JoinColumn(name = "talent", nullable = false, referencedColumnName = "id")
+	@JoinColumn(name = "someone", nullable = false, referencedColumnName = "id")
 	@ManyToOne(optional = false)
-	private Talent talent;
+	private Someone someone;
 
-	@Column(name = "expiry_date")
+	@Column(name = "expiry")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date expiryDate;
+	private Date expiry;
 
 	private Date calculateExpiryDate(int expiryTimeInMinutes) {
 		Calendar cal = Calendar.getInstance();
@@ -62,40 +57,40 @@ public class VerificationToken implements Serializable {
 		return new Date(cal.getTime().getTime());
 	}
 
-	public VerificationToken() {
-		this.expiryDate = calculateExpiryDate(EXPIRATION);
+	public EmailVerification() {
+		this.expiry = calculateExpiryDate(EXPIRATION);
 	}
 
-	public VerificationToken(Long id) {
+	public EmailVerification(Long id) {
 		this.id = id;
-		this.expiryDate = calculateExpiryDate(EXPIRATION);
+		this.expiry = calculateExpiryDate(EXPIRATION);
 	}
 
-	public VerificationToken(UUID token, Talent talent) {
-		this.token = token;
-		this.talent = talent;
-		this.expiryDate = calculateExpiryDate(EXPIRATION);
+	public EmailVerification(String token, Someone talent) {
+		this.verificationCode = token;
+		this.someone = talent;
+		this.expiry = calculateExpiryDate(EXPIRATION);
 	}
 
-	public VerificationToken(Long id, UUID token) {
+	public EmailVerification(Long id, String token) {
 		this.id = id;
-		this.token = token;
+		this.verificationCode = token;
 	}
 
-	public Talent getTalent() {
-		return talent;
+	public Someone getSomeone() {
+		return someone;
 	}
 
-	public void setTalent(Talent talent) {
-		this.talent = talent;
+	public void setSomeone(Someone someone) {
+		this.someone = someone;
 	}
 
-	public UUID getToken() {
-		return token;
+	public String getVerificationCode() {
+		return verificationCode;
 	}
 
-	public void setToken(UUID token) {
-		this.token = token;
+	public void setVerificationCode(String verificationCode) {
+		this.verificationCode = verificationCode;
 	}
 
 	public Long getId() {
@@ -106,12 +101,12 @@ public class VerificationToken implements Serializable {
 		this.id = id;
 	}
 
-	public Date getExpiryDate() {
-		return expiryDate;
+	public Date getExpiry() {
+		return expiry;
 	}
 
 	public void setExpiryDate() {
-		this.expiryDate = calculateExpiryDate(EXPIRATION);
+		this.expiry = calculateExpiryDate(EXPIRATION);
 	}
 
 	@Override
@@ -124,10 +119,10 @@ public class VerificationToken implements Serializable {
 	@Override
 	public boolean equals(Object object) {
 		// TODO: Warning - this method won't work in the case the id fields are not set
-		if (!(object instanceof VerificationToken)) {
+		if (!(object instanceof EmailVerification)) {
 			return false;
 		}
-		VerificationToken other = (VerificationToken) object;
+		EmailVerification other = (EmailVerification) object;
 		if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
 			return false;
 		}
@@ -136,7 +131,7 @@ public class VerificationToken implements Serializable {
 
 	@Override
 	public String toString() {
-		return "com.security.demo.entity.VerificationToken[ id=" + id + " ]";
+		return "com.security.demo.entity.EmailVerification[ id=" + id + " ]";
 	}
 
 }

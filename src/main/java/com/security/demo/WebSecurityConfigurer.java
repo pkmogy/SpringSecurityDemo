@@ -1,6 +1,6 @@
 package com.security.demo;
 
-import com.security.demo.service.MyUserDetailsService;
+import com.security.demo.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	private MyUserDetailsService userDetailsService;
+	private UserDetailsServiceImpl userDetailsService;
 
 	@Override
 	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
@@ -34,9 +34,8 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.
 			authorizeRequests().
-			antMatchers("/registration/").permitAll(). // login.css 允許所有人請求
-			antMatchers("/registration/confirm").permitAll().
-			antMatchers("/registration/resendToken").permitAll().
+			antMatchers("/registration/", "/registration/confirm", "/registration/resendToken", "/talent/forgetPassword").permitAll(). // 允許所有人請求
+			//antMatchers().hasAuthority("CHANGE_PASSWORD_PRIVILEGE").
 			anyRequest().authenticated(). // 其它全部的路徑都得經過使用者驗證後才可以存取
 			and().
 			formLogin(). // 使用 Form Login 登入驗證

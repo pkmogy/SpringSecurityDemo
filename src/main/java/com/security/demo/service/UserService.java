@@ -6,15 +6,15 @@
 package com.security.demo.service;
 
 import com.security.demo.dto.RegistrationDto;
-import com.security.demo.entity.Talent;
-import com.security.demo.entity.VerificationToken;
+import com.security.demo.entity.Someone;
+import com.security.demo.entity.EmailVerification;
 import java.util.UUID;
 
 /**
  *
  * @author 李羅
  */
-public interface IUserService {
+public interface UserService {
 
 	/**
 	 * 建立註冊DTO實作
@@ -23,7 +23,7 @@ public interface IUserService {
 	 * @return
 	 * @throws Exception 
 	 */
-	Talent registerNewUserAccount(RegistrationDto registrationDto) throws Exception;
+	Someone registerNewUserAccount(RegistrationDto registrationDto) throws Exception;
 	
 	/**
 	 * 取得使用者實作
@@ -31,27 +31,40 @@ public interface IUserService {
 	 * @param verificationToken 驗證Token
 	 * @return 
 	 */
-	Talent getUser(UUID verificationToken);
+	Someone getUser(String verificationToken);
+	
+	/**
+	 * 取得使用者實作
+	 * 
+	 * @param email 信箱
+	 * @return 
+	 */
+	Someone getEmail(String email);
  
 	/**
 	 * 儲存會員
 	 * 
 	 * @param user 會員 
 	 */
-	void saveRegisteredUser(Talent user);
+	void saveRegisteredUser(Someone user);
  
 	/*
 	建立 token
 	*/
-	void createVerificationToken(Talent user, UUID token);
+	void createVerificationToken(Someone user, String token);
 	
 	/*
 	更新 token
 	*/
-	VerificationToken resetVerificationToken(UUID token) throws Exception;
+	EmailVerification resetVerificationToken(String token) throws Exception;
  
 	/*
 	取得 token
 	*/
-	VerificationToken getVerificationToken(UUID VerificationToken);
+	EmailVerification getVerificationToken(String VerificationToken);
+	
+	/*
+	重置密碼
+	*/
+	String resetShadow(Someone user);
 }

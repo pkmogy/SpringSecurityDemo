@@ -1,7 +1,6 @@
 package com.security.demo.service;
 
-import com.security.demo.repository.TalentRepository;
-import com.security.demo.entity.Talent;
+import com.security.demo.entity.Someone;
 import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -12,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import com.security.demo.repository.SomeoneRepository;
 
 /**
  *
@@ -19,16 +19,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Transactional
-public class MyUserDetailsService implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Autowired
-	private TalentRepository talentRepository;
+	private SomeoneRepository talentRepository;
 	// 
 
 	public UserDetails loadUserByUsername(String email)
 		throws UsernameNotFoundException {
 
-		Talent talent = talentRepository.findByEmail(email);
+		Someone talent = talentRepository.findByEmail(email);
 		if (talent == null) {
 			throw new UsernameNotFoundException("No user found with username: " + email);
 		}

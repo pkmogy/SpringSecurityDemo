@@ -1,11 +1,9 @@
 package com.security.demo.controller;
 
 import com.security.demo.dto.RegistrationDto;
-import com.security.demo.entity.Talent;
-import com.security.demo.entity.VerificationToken;
+import com.security.demo.entity.Someone;
+import com.security.demo.entity.EmailVerification;
 import com.security.demo.event.OnRegistrationCompleteEvent;
-import com.security.demo.repository.TalentRepository;
-import com.security.demo.service.IUserService;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.UUID;
@@ -25,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.Document;
+import com.security.demo.service.UserService;
+import com.security.demo.repository.SomeoneRepository;
 
 /**
  *
@@ -35,10 +35,10 @@ import org.w3c.dom.Document;
 public class RegistrationController {
 
 	@Autowired
-	TalentRepository talentRepository;
+	SomeoneRepository talentRepository;
 
 	@Autowired
-	private IUserService iUserService;
+	private UserService iUserService;
 
 	@Autowired
 	ApplicationEventPublisher applicationEventPublisher;
@@ -50,8 +50,8 @@ public class RegistrationController {
 	 * @param result 驗證是否正確
 	 * @return
 	 */
-	private Talent createUserAccount(RegistrationDto registrationDto, BindingResult result) {
-		Talent registered = null;
+	private Someone createUserAccount(RegistrationDto registrationDto, BindingResult result) {
+		Someone registered = null;
 		try {
 			registered = iUserService.registerNewUserAccount(registrationDto);
 		} catch (Exception e) {
@@ -102,7 +102,7 @@ public class RegistrationController {
 	 */
 	@PostMapping("/")
 	public ModelAndView registerUserAccount(@ModelAttribute("testModeelAttribute") @Valid RegistrationDto registrationDto, BindingResult result, WebRequest request, Errors errors) throws Exception {
-		Talent talent = new Talent();
+		Someone talent = new Someone();
 		if (!result.hasErrors()) {
 			/*
 			建立會員
@@ -119,7 +119,7 @@ public class RegistrationController {
 			return modelAndView;
 		}
 		try {
-			String appUrl = request.getContextPath();
+			String appUrl = "/registration/confirm";
 			applicationEventPublisher.publishEvent(new OnRegistrationCompleteEvent(talent, request.getLocale(), appUrl));
 		} catch (Exception me) {
 			System.out.print(me);
@@ -132,34 +132,34 @@ public class RegistrationController {
 	}
 
 	@GetMapping("/confirm")
-	public ModelAndView confirmRegistration(WebRequest request, @RequestParam("token") UUID token) throws Exception {
+	public ModelAndView confirmRegistration(WebRequest request, @RequestParam("token") String token) throws Exception {
 
 		Locale locale = request.getLocale();
 
-		VerificationToken verificationToken = iUserService.getVerificationToken(token);
+		EmailVerification verificationToken = iUserService.getVerificationToken(token);
 		if (verificationToken == null) {
 			return new ModelAndView("redirect:/");
 		}
 
-		Talent talent = verificationToken.getTalent();
+		Someone talent = verificationToken.getSomeone();
 		Calendar cal = Calendar.getInstance();
-		if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-			return new ModelAndView("redirect:/registration/resendToken?token=" + token.toString());
+		if ((verificationToken.getExpiry().getTime() - cal.getTime().getTime()) <= 0) {
+			return new ModelAndView("redirect:/registration/resendToken?token=" + token);
 		}
 
-		talent.setEnabled(true);
+		talent.setVerified(true);
 		iUserService.saveRegisteredUser(talent);
 		return index();
 	}
 
 	@GetMapping("/resendToken")
-	public ModelAndView resendRegistration(WebRequest request, @RequestParam("token") UUID token) throws Exception {
+	public ModelAndView resendRegistration(WebRequest request, @RequestParam("token") String token) throws Exception {
 
-		VerificationToken verificationToken = iUserService.resetVerificationToken(token);
+		EmailVerification verificationToken = iUserService.resetVerificationToken(token);
 
 		try {
 			String appUrl = request.getContextPath();
-			applicationEventPublisher.publishEvent(new OnRegistrationCompleteEvent(verificationToken.getTalent(), request.getLocale(), appUrl));
+			applicationEventPublisher.publishEvent(new OnRegistrationCompleteEvent(verificationToken.getSomeone(), request.getLocale(), appUrl));
 		} catch (Exception me) {
 			return index();
 		}

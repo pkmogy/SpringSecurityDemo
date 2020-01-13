@@ -8,7 +8,7 @@ import javax.validation.ConstraintValidatorContext;
  *
  * @author 李羅
  */
-public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, Object> {
+public class PasswordMatchesImpl implements ConstraintValidator<PasswordMatches, Object> {
 
 	@Override
 	public void initialize(PasswordMatches constraintAnnotation) {

@@ -1,7 +1,6 @@
 !.mvn/wrapper/maven-wrapper.jar
 *.dia~
 .env
-.sql
 /target/
 HELP.md
 

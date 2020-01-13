@@ -9,7 +9,7 @@ import javax.validation.ConstraintValidatorContext;
  *
  * @author 李羅
  */
-public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
+public class EmailValidatorImpl implements ConstraintValidator<ValidEmail, String> {
 
 	private Pattern pattern;
 	private Matcher matcher;

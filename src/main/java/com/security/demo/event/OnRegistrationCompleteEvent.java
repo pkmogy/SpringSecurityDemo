@@ -1,6 +1,6 @@
 package com.security.demo.event;
 
-import com.security.demo.entity.Talent;
+import com.security.demo.entity.Someone;
 import java.util.Locale;
 import org.springframework.context.ApplicationEvent;
 
@@ -15,9 +15,9 @@ public class OnRegistrationCompleteEvent extends ApplicationEvent {
 	
 	private String appUrl;
 	private Locale locale;
-	private Talent talent;
+	private Someone talent;
 
-	public OnRegistrationCompleteEvent(Talent talent, Locale locale, String appUrl) {
+	public OnRegistrationCompleteEvent(Someone talent, Locale locale, String appUrl) {
 		super(talent);
 
 		this.talent = talent;
@@ -42,11 +42,11 @@ public class OnRegistrationCompleteEvent extends ApplicationEvent {
 		this.locale = locale;
 	}
 
-	public Talent getTalent() {
+	public Someone getTalent() {
 		return talent;
 	}
 
-	public void setTalent(Talent talent) {
+	public void setTalent(Someone talent) {
 		this.talent = talent;
 	}
 }
