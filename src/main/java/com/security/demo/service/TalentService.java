@@ -20,18 +20,18 @@ public class TalentService implements IUserService {
 
 	@Autowired
 	private TalentRepository talentRepository;
-	
+
 	@Autowired
-	private VerificationTokenRepository  verificationTokenRepository;
+	private VerificationTokenRepository verificationTokenRepository;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	/**
-	 * 
+	 *
 	 * @param accountDto 註冊Dto
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	@Transactional
 	@Override
@@ -52,7 +52,7 @@ public class TalentService implements IUserService {
 
 	/**
 	 * @param email 檢查Email是否已存在
-	 * @return 
+	 * @return
 	 */
 	private boolean emailExist(String email) {
 		Talent talent = talentRepository.findByEmail(email);
@@ -82,7 +82,7 @@ public class TalentService implements IUserService {
 	}
 
 	/**
-	 * @param talent 儲存會員資料 
+	 * @param talent 儲存會員資料
 	 */
 	@Override
 	public void saveRegisteredUser(Talent talent) {
@@ -97,5 +97,18 @@ public class TalentService implements IUserService {
 	public void createVerificationToken(Talent user, UUID token) {
 		VerificationToken myToken = new VerificationToken(token, user);
 		verificationTokenRepository.save(myToken);
+	}
+
+	/**
+	 * @param token 更新Token
+	 * @return 
+	 */
+	@Override
+	public VerificationToken resetVerificationToken(UUID token) {
+		VerificationToken myToken = verificationTokenRepository.findByToken(token);
+		UUID newToken = UUID.randomUUID();
+		myToken.setToken(newToken);
+		myToken.setExpiryDate();
+		return verificationTokenRepository.save(myToken);
 	}
 }

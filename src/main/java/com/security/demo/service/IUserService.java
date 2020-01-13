@@ -44,6 +44,11 @@ public interface IUserService {
 	建立 token
 	*/
 	void createVerificationToken(Talent user, UUID token);
+	
+	/*
+	更新 token
+	*/
+	VerificationToken resetVerificationToken(UUID token) throws Exception;
  
 	/*
 	取得 token

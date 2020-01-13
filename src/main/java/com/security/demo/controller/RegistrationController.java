@@ -33,7 +33,7 @@ import org.w3c.dom.Document;
 @Controller
 @RequestMapping("/registration")
 public class RegistrationController {
-	
+
 	@Autowired
 	TalentRepository talentRepository;
 
@@ -138,23 +138,31 @@ public class RegistrationController {
 
 		VerificationToken verificationToken = iUserService.getVerificationToken(token);
 		if (verificationToken == null) {
-			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
-			ModelAndView modelAndView = new ModelAndView("registrations");
-			modelAndView.getModelMap().addAttribute(new DOMSource(document));
-			return modelAndView;
+			return new ModelAndView("redirect:/");
 		}
 
 		Talent talent = verificationToken.getTalent();
 		Calendar cal = Calendar.getInstance();
 		if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
-			ModelAndView modelAndView = new ModelAndView("registrations111");
-			modelAndView.getModelMap().addAttribute(new DOMSource(document));
-			return modelAndView;
+			return new ModelAndView("redirect:/registration/resendToken?token=" + token.toString());
 		}
 
 		talent.setEnabled(true);
 		iUserService.saveRegisteredUser(talent);
 		return index();
+	}
+
+	@GetMapping("/resendToken")
+	public ModelAndView resendRegistration(WebRequest request, @RequestParam("token") UUID token) throws Exception {
+
+		VerificationToken verificationToken = iUserService.resetVerificationToken(token);
+
+		try {
+			String appUrl = request.getContextPath();
+			applicationEventPublisher.publishEvent(new OnRegistrationCompleteEvent(verificationToken.getTalent(), request.getLocale(), appUrl));
+		} catch (Exception me) {
+			return index();
+		}
+		return new ModelAndView("redirect:/");
 	}
 }

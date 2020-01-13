@@ -110,8 +110,8 @@ public class VerificationToken implements Serializable {
 		return expiryDate;
 	}
 
-	public void setExpiryDate(Date expiryDate) {
-		this.expiryDate = expiryDate;
+	public void setExpiryDate() {
+		this.expiryDate = calculateExpiryDate(EXPIRATION);
 	}
 
 	@Override
