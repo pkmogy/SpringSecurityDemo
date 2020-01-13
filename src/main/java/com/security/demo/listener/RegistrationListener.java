@@ -39,14 +39,14 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 		iUserService.createVerificationToken(talent, token);
 
 		String recipientAddress = talent.getEmail();
-		String subject = "Registration Confirmation";
-		String confirmationUrl = event.getAppUrl() + "/regitrationConfirm?token=" + token.toString();
+		String subject = "註冊確認信";
+		String confirmationUrl = event.getAppUrl() + "/registration/confirm?token=" + token.toString();
 		//String message = messageSource.getMessage("message.regSucc", null, event.getLocale());
 
 		SimpleMailMessage email = new SimpleMailMessage();
 		email.setTo(recipientAddress);
 		email.setSubject(subject);
-		email.setText("來認證喔" + " rn" + "http://localhost:8080" + confirmationUrl);
+		email.setText("來認證喔: " + "http://localhost:8080" + confirmationUrl);
 		javaMailSender.send(email);
 	}
 }

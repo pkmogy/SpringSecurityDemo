@@ -16,19 +16,37 @@ import java.util.UUID;
  */
 public interface IUserService {
 
-	/*
-	建立註冊DTO實作
-	*/
+	/**
+	 * 建立註冊DTO實作
+	 * 
+	 * @param registrationDto 註冊資料
+	 * @return
+	 * @throws Exception 
+	 */
 	Talent registerNewUserAccount(RegistrationDto registrationDto) throws Exception;
 	
-	/*
-	取得使用者實作
-	*/
+	/**
+	 * 取得使用者實作
+	 * 
+	 * @param verificationToken 驗證Token
+	 * @return 
+	 */
 	Talent getUser(UUID verificationToken);
  
+	/**
+	 * 儲存會員
+	 * 
+	 * @param user 會員 
+	 */
 	void saveRegisteredUser(Talent user);
  
+	/*
+	建立 token
+	*/
 	void createVerificationToken(Talent user, UUID token);
  
+	/*
+	取得 token
+	*/
 	VerificationToken getVerificationToken(UUID VerificationToken);
 }

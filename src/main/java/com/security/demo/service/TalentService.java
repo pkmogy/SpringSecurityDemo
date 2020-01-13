@@ -27,6 +27,12 @@ public class TalentService implements IUserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
+	/**
+	 * 
+	 * @param accountDto 註冊Dto
+	 * @return
+	 * @throws Exception 
+	 */
 	@Transactional
 	@Override
 	public Talent registerNewUserAccount(RegistrationDto accountDto) throws Exception {
@@ -44,6 +50,10 @@ public class TalentService implements IUserService {
 		return talentRepository.saveAndFlush(talent);
 	}
 
+	/**
+	 * @param email 檢查Email是否已存在
+	 * @return 
+	 */
 	private boolean emailExist(String email) {
 		Talent talent = talentRepository.findByEmail(email);
 		if (talent != null) {
@@ -52,22 +62,37 @@ public class TalentService implements IUserService {
 		return false;
 	}
 
+	/**
+	 * @param verificationToken 取得驗證Token
+	 * @return 會員資料
+	 */
 	@Override
 	public Talent getUser(UUID verificationToken) {
 		Talent talent = verificationTokenRepository.findByToken(verificationToken).getTalent();
 		return talent;
 	}
 
+	/**
+	 * @param VerificationToken 取得驗證Token
+	 * @return 驗證Token
+	 */
 	@Override
 	public VerificationToken getVerificationToken(UUID VerificationToken) {
 		return verificationTokenRepository.findByToken(VerificationToken);
 	}
 
+	/**
+	 * @param talent 儲存會員資料 
+	 */
 	@Override
 	public void saveRegisteredUser(Talent talent) {
 		talentRepository.saveAndFlush(talent);
 	}
 
+	/**
+	 * @param user 會員
+	 * @param token 驗證Token
+	 */
 	@Override
 	public void createVerificationToken(Talent user, UUID token) {
 		VerificationToken myToken = new VerificationToken(token, user);

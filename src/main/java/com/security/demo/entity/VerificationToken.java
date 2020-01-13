@@ -63,17 +63,19 @@ public class VerificationToken implements Serializable {
 	}
 
 	public VerificationToken() {
+		this.expiryDate = calculateExpiryDate(EXPIRATION);
 	}
 
 	public VerificationToken(Long id) {
 		this.id = id;
+		this.expiryDate = calculateExpiryDate(EXPIRATION);
 	}
 
 	public VerificationToken(UUID token, Talent talent) {
 		this.token = token;
 		this.talent = talent;
+		this.expiryDate = calculateExpiryDate(EXPIRATION);
 	}
-	
 
 	public VerificationToken(Long id, UUID token) {
 		this.id = id;

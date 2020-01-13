@@ -6,10 +6,7 @@ import com.security.demo.entity.VerificationToken;
 import com.security.demo.event.OnRegistrationCompleteEvent;
 import com.security.demo.repository.TalentRepository;
 import com.security.demo.service.IUserService;
-import com.security.demo.service.TalentService;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import javax.validation.Valid;
@@ -17,10 +14,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -40,10 +33,7 @@ import org.w3c.dom.Document;
 @Controller
 @RequestMapping("/registration")
 public class RegistrationController {
-
-	@Autowired
-	TalentService talentService;
-
+	
 	@Autowired
 	TalentRepository talentRepository;
 
@@ -63,7 +53,7 @@ public class RegistrationController {
 	private Talent createUserAccount(RegistrationDto registrationDto, BindingResult result) {
 		Talent registered = null;
 		try {
-			registered = talentService.registerNewUserAccount(registrationDto);
+			registered = iUserService.registerNewUserAccount(registrationDto);
 		} catch (Exception e) {
 			return null;
 		}
@@ -114,6 +104,9 @@ public class RegistrationController {
 	public ModelAndView registerUserAccount(@ModelAttribute("testModeelAttribute") @Valid RegistrationDto registrationDto, BindingResult result, WebRequest request, Errors errors) throws Exception {
 		Talent talent = new Talent();
 		if (!result.hasErrors()) {
+			/*
+			建立會員
+			 */
 			talent = createUserAccount(registrationDto, result);
 		}
 		if (talent == null) {
@@ -152,13 +145,13 @@ public class RegistrationController {
 		}
 
 		Talent talent = verificationToken.getTalent();
-//		Calendar cal = Calendar.getInstance();
-//		if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-//			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
-//			ModelAndView modelAndView = new ModelAndView("registrations111");
-//			modelAndView.getModelMap().addAttribute(new DOMSource(document));
-//			return modelAndView;
-//		}
+		Calendar cal = Calendar.getInstance();
+		if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
+			ModelAndView modelAndView = new ModelAndView("registrations111");
+			modelAndView.getModelMap().addAttribute(new DOMSource(document));
+			return modelAndView;
+		}
 
 		talent.setEnabled(true);
 		iUserService.saveRegisteredUser(talent);
