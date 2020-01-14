@@ -19,7 +19,7 @@ import com.security.demo.service.UserService;
 public class RegistrationListener implements ApplicationListener<OnRegistrationCompleteEvent> {
 
 	@Autowired
-	private UserService iUserService;
+	private UserService userService;
 
 	@Autowired
 	private JavaMailSender javaMailSender;
@@ -32,7 +32,7 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 	private void confirmRegistration(OnRegistrationCompleteEvent event) {
 		Someone talent = event.getTalent();
 		String token = UUID.randomUUID().toString();
-		iUserService.createVerificationToken(talent, token);
+		userService.createVerificationToken(talent, token);
 
 		String recipientAddress = talent.getEmail();
 		String subject = "註冊確認信";

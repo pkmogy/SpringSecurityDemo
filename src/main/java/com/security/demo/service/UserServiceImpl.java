@@ -17,38 +17,38 @@ import com.security.demo.repository.EmailVerificationRepository;
  * @author 李羅
  */
 @Service
-public class TalentServiceImpl implements UserService {
+public class UserServiceImpl implements UserService {
 
 	@Autowired
-	private SomeoneRepository talentRepository;
+	private SomeoneRepository someoneRepository;
 
 	@Autowired
-	private EmailVerificationRepository verificationTokenRepository;
+	private EmailVerificationRepository emailVerificationRepository;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	/**
 	 *
-	 * @param accountDto 註冊Dto
+	 * @param registrationDto 註冊Dto
 	 * @return
 	 * @throws Exception
 	 */
 	@Transactional
 	@Override
-	public Someone registerNewUserAccount(RegistrationDto accountDto) throws Exception {
-
-		if (emailExist(accountDto.getEmail())) {
-			throw new Exception("There is an account with that email adress: " + accountDto.getEmail());
+	public Someone registerNewUserAccount(RegistrationDto registrationDto) throws Exception {
+		if (emailExist(registrationDto.getEmail())) {
+			throw new Exception("There is an account with that email adress: " + registrationDto.getEmail());
 		}
-		// the rest of the registration operation
-		Someone talent = new Someone();
-		talent.setNickname(accountDto.getNickName());
-		talent.setShadow(passwordEncoder.encode(accountDto.getPassword()));
-		talent.setEmail(accountDto.getEmail());
-		talent.setRole("ROLE_ADMIN");
 
-		return talentRepository.saveAndFlush(talent);
+		// the rest of the registration operation
+		Someone someone = new Someone();
+		someone.setNickname(registrationDto.getNickName());
+		someone.setShadow(passwordEncoder.encode(registrationDto.getPassword()));
+		someone.setEmail(registrationDto.getEmail());
+		someone.setRole("ROLE_ADMIN");
+
+		return someoneRepository.saveAndFlush(someone);
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class TalentServiceImpl implements UserService {
 	 * @return
 	 */
 	private boolean emailExist(String email) {
-		Someone talent = talentRepository.findByEmail(email);
+		Someone talent = someoneRepository.findByEmail(email);
 		if (talent != null) {
 			return true;
 		}
@@ -69,13 +69,13 @@ public class TalentServiceImpl implements UserService {
 	 */
 	@Override
 	public Someone getUser(String verificationToken) {
-		Someone talent = verificationTokenRepository.findByVerificationCode(verificationToken).getSomeone();
+		Someone talent = emailVerificationRepository.findByVerificationCode(verificationToken).getSomeone();
 		return talent;
 	}
 
 	@Override
 	public Someone getEmail(String email) {
-		Someone talent = talentRepository.findByEmail(email);
+		Someone talent = someoneRepository.findByEmail(email);
 		return talent;
 	}
 
@@ -85,7 +85,7 @@ public class TalentServiceImpl implements UserService {
 	 */
 	@Override
 	public EmailVerification getVerificationToken(String VerificationToken) {
-		return verificationTokenRepository.findByVerificationCode(VerificationToken);
+		return emailVerificationRepository.findByVerificationCode(VerificationToken);
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class TalentServiceImpl implements UserService {
 	 */
 	@Override
 	public void saveRegisteredUser(Someone talent) {
-		talentRepository.saveAndFlush(talent);
+		someoneRepository.saveAndFlush(talent);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class TalentServiceImpl implements UserService {
 	@Override
 	public void createVerificationToken(Someone user, String token) {
 		EmailVerification myToken = new EmailVerification(token, user);
-		verificationTokenRepository.save(myToken);
+		emailVerificationRepository.save(myToken);
 	}
 
 	/**
@@ -112,18 +112,18 @@ public class TalentServiceImpl implements UserService {
 	 */
 	@Override
 	public EmailVerification resetVerificationToken(String token) {
-		EmailVerification myToken = verificationTokenRepository.findByVerificationCode(token);
+		EmailVerification myToken = emailVerificationRepository.findByVerificationCode(token);
 		String newToken = UUID.randomUUID().toString();
 		myToken.setVerificationCode(newToken);
 		myToken.setExpiryDate();
-		return verificationTokenRepository.save(myToken);
+		return emailVerificationRepository.save(myToken);
 	}
 
 	@Override
 	public String resetShadow(Someone user) {
 		String shadow=randomAlphanumeric(10);
 		user.setShadow(passwordEncoder.encode(shadow));
-		talentRepository.save(user);
+		someoneRepository.save(user);
 		return shadow;
 	}
 }

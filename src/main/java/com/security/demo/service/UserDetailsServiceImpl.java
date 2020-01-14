@@ -22,26 +22,40 @@ import com.security.demo.repository.SomeoneRepository;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Autowired
-	private SomeoneRepository talentRepository;
-	// 
+	private SomeoneRepository someoneRepository;
 
-	public UserDetails loadUserByUsername(String email)
-		throws UsernameNotFoundException {
-
-		Someone talent = talentRepository.findByEmail(email);
-		if (talent == null) {
+	/**
+	 *
+	 * @param email
+	 * @return
+	 * @throws UsernameNotFoundException
+	 */
+	@Override
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		Someone someone = someoneRepository.findByEmail(email);
+		if (someone == null) {
 			throw new UsernameNotFoundException("No user found with username: " + email);
 		}
-		boolean enabled = true;
-		boolean accountNonExpired = true;
-		boolean credentialsNonExpired = true;
-		boolean accountNonLocked = true;
-		return new org.springframework.security.core.userdetails.User(talent.getEmail().toLowerCase(),
-			talent.getShadow(), enabled, accountNonExpired,
-			credentialsNonExpired, accountNonLocked,
-			getAuthorities(talent.getRole()));
+		boolean verfied = someone.isVerified();
+//		boolean accountNonExpired = true;
+//		boolean credentialsNonExpired = true;
+//		boolean accountNonLocked = true;
+		return new org.springframework.security.core.userdetails.User(
+			someone.getEmail().toLowerCase(),
+			someone.getShadow(),
+			verfied,
+			true, //accountNonExpired,
+			true, //credentialsNonExpired,
+			true, //accountNonLocked,
+			getAuthorities(someone.getRole())
+		);
 	}
 
+	/**
+	 *
+	 * @param role
+	 * @return
+	 */
 	private static List<GrantedAuthority> getAuthorities(String role) {
 		List<GrantedAuthority> authorities = new ArrayList<>();
 		authorities.add(new SimpleGrantedAuthority(role));

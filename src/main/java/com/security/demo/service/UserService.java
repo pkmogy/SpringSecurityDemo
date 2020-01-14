@@ -8,7 +8,6 @@ package com.security.demo.service;
 import com.security.demo.dto.RegistrationDto;
 import com.security.demo.entity.Someone;
 import com.security.demo.entity.EmailVerification;
-import java.util.UUID;
 
 /**
  *

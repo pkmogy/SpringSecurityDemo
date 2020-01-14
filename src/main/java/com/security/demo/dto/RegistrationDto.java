@@ -15,10 +15,11 @@ public class RegistrationDto {
 	@NotNull
 	@NotEmpty
 	private String nickName;
-	
+
 	@NotNull
 	@NotEmpty
 	private String password;
+
 	private String matchingPassword;
 
 	@Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message = "Invalid email")
@@ -27,7 +28,6 @@ public class RegistrationDto {
 	private String email;
 
 	// standard getters and setters
-
 	public String getNickName() {
 		return nickName;
 	}
@@ -59,7 +59,4 @@ public class RegistrationDto {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-	
-	
 }

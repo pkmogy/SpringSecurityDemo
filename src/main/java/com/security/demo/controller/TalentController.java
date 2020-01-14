@@ -25,7 +25,7 @@ import com.security.demo.service.UserService;
 public class TalentController {
 
 	@Autowired
-	private UserService iUserService;
+	private UserService userService;
 
 	@Autowired
 	ApplicationEventPublisher applicationEventPublisher;
@@ -44,7 +44,7 @@ public class TalentController {
 
 	@PostMapping("/forgetPassword")
 	public ModelAndView resetPassword(HttpServletRequest request, @RequestParam("email") String email) throws Exception {
-		Someone talent = iUserService.getEmail(email);
+		Someone talent = userService.getEmail(email);
 		if (talent == null) {
 			return index();
 		}

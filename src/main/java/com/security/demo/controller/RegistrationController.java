@@ -6,7 +6,6 @@ import com.security.demo.entity.EmailVerification;
 import com.security.demo.event.OnRegistrationCompleteEvent;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.UUID;
 import javax.validation.Valid;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -25,6 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.Document;
 import com.security.demo.service.UserService;
 import com.security.demo.repository.SomeoneRepository;
+import java.io.IOException;
 
 /**
  *
@@ -38,7 +38,7 @@ public class RegistrationController {
 	SomeoneRepository talentRepository;
 
 	@Autowired
-	private UserService iUserService;
+	private UserService userService;
 
 	@Autowired
 	ApplicationEventPublisher applicationEventPublisher;
@@ -53,9 +53,8 @@ public class RegistrationController {
 	private Someone createUserAccount(RegistrationDto registrationDto, BindingResult result) {
 		Someone registered = null;
 		try {
-			registered = iUserService.registerNewUserAccount(registrationDto);
+			registered = userService.registerNewUserAccount(registrationDto);
 		} catch (Exception e) {
-			return null;
 		}
 		return registered;
 	}
@@ -94,35 +93,41 @@ public class RegistrationController {
 	 * 註冊會員
 	 *
 	 * @param registrationDto 會員資料驗證
-	 * @param result 驗證是否正確
-	 * @param request
+	 * @param bindingResult 驗證是否正確
+	 * @param webRequest
 	 * @param errors
 	 * @return
 	 * @throws Exception
 	 */
 	@PostMapping("/")
-	public ModelAndView registerUserAccount(@ModelAttribute("testModeelAttribute") @Valid RegistrationDto registrationDto, BindingResult result, WebRequest request, Errors errors) throws Exception {
-		Someone talent = new Someone();
-		if (!result.hasErrors()) {
+	public ModelAndView registerUserAccount(@ModelAttribute("testModeelAttribute") @Valid RegistrationDto registrationDto, BindingResult bindingResult, WebRequest webRequest, Errors errors) throws Exception {
+		Someone someone = new Someone();
+
+		if (!bindingResult.hasErrors()) {
 			/*
 			建立會員
 			 */
-			talent = createUserAccount(registrationDto, result);
+			someone = createUserAccount(registrationDto, bindingResult);
 		}
-		if (talent == null) {
-			result.rejectValue("email", "message.regError");
+
+		if (someone == null) {
+			bindingResult.rejectValue("email", "message.regError");
 		}
-		if (result.hasErrors()) {
+
+		if (bindingResult.hasErrors()) {
 			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
 			ModelAndView modelAndView = new ModelAndView("registrations");
 			modelAndView.getModelMap().addAttribute(new DOMSource(document));
 			return modelAndView;
 		}
+
 		try {
 			String appUrl = "/registration/confirm";
-			applicationEventPublisher.publishEvent(new OnRegistrationCompleteEvent(talent, request.getLocale(), appUrl));
-		} catch (Exception me) {
-			System.out.print(me);
+			applicationEventPublisher.publishEvent(
+				new OnRegistrationCompleteEvent(someone, webRequest.getLocale(), appUrl)
+			);
+		} catch (IllegalArgumentException me) {
+			System.out.println(me);
 			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
 			ModelAndView modelAndView = new ModelAndView("registrations111");
 			modelAndView.getModelMap().addAttribute(new DOMSource(document));
@@ -136,7 +141,7 @@ public class RegistrationController {
 
 		Locale locale = request.getLocale();
 
-		EmailVerification verificationToken = iUserService.getVerificationToken(token);
+		EmailVerification verificationToken = userService.getVerificationToken(token);
 		if (verificationToken == null) {
 			return new ModelAndView("redirect:/");
 		}
@@ -148,14 +153,14 @@ public class RegistrationController {
 		}
 
 		talent.setVerified(true);
-		iUserService.saveRegisteredUser(talent);
+		userService.saveRegisteredUser(talent);
 		return index();
 	}
 
 	@GetMapping("/resendToken")
 	public ModelAndView resendRegistration(WebRequest request, @RequestParam("token") String token) throws Exception {
 
-		EmailVerification verificationToken = iUserService.resetVerificationToken(token);
+		EmailVerification verificationToken = userService.resetVerificationToken(token);
 
 		try {
 			String appUrl = request.getContextPath();
