@@ -60,14 +60,13 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 			and().
 			rememberMe().
 				rememberMeParameter("remember"). //from的忘記我欄位name
-				key("uniqueAndSecret").
+				key("uniqueAndSecret"). //組成 cookie 的加密字串
 				rememberMeCookieName("remember").
 				tokenValiditySeconds(86400).//設定有效時間 ，預設是兩周，這裡設置為1天
 			and().
-			csrf().
+			csrf().disable(); // 關閉 CSRF 防護
 			// 預設開啟 CSRF 功能, 需設定 csrfTokenRepository() 以存取 CsrfToken 進行驗證
 			//csrfTokenRepository(new HttpSessionCsrfTokenRepository());
-			disable(); // 關閉 CSRF 防護
 	}
 
 	@Bean
