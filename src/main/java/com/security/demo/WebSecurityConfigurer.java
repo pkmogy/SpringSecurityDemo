@@ -59,7 +59,10 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 			invalidateHttpSession(true). // 登出時是否 invalidate HttpSession
 			deleteCookies("JSESSIONID"). // 登出同時清除 cookies
 			and().
-			rememberMe().rememberMeParameter("remember-new").key("uniqueAndSecret").tokenValiditySeconds(86400).//記住我功能，有效時間預設是兩周，這裡設置為1天
+			rememberMe()
+				.rememberMeParameter("remember")
+				.key("uniqueAndSecret")
+				.tokenValiditySeconds(86400).//設定有效時間 ，預設是兩周，這裡設置為1天
 			and().
 			csrf().
 			// 預設開啟 CSRF 功能, 需設定 csrfTokenRepository() 以存取 CsrfToken 進行驗證

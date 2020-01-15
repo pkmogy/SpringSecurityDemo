@@ -12,7 +12,7 @@
 		<xsl:text disable-output-escaping="yes">&#60;!DOCTYPE HTML&#62;</xsl:text>
 		<HTML lang="zh-TW">
 			<HEAD>
-				<TITLE>找回密碼</TITLE>
+				<TITLE>會員登入</TITLE>
 			</HEAD>
 			<BODY>
 				<xsl:apply-templates select="document"/>
@@ -31,7 +31,7 @@
 				<INPUT type="password" class="form-control" name="password" id="password" />
 			</DIV>
 			<DIV class="form-group">
-				<INPUT type="checkbox" name="remember" />
+				<INPUT type="checkbox" name="remember" id="remember"/>
 				<LABEL for="remember">記住我</LABEL>
 			</DIV>
 			
