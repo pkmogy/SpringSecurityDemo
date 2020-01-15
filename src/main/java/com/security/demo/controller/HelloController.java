@@ -24,7 +24,7 @@ public class HelloController {
 		return "";
 	}
 
-	@GetMapping("login")
+	@GetMapping("login.aspx")
 	public ModelAndView login() throws Exception {
 		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
 		ModelAndView modelAndView = new ModelAndView("login");
