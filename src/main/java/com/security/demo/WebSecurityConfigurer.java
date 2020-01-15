@@ -3,7 +3,6 @@ package com.security.demo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -59,21 +58,16 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 			invalidateHttpSession(true). // 登出時是否 invalidate HttpSession
 			deleteCookies("JSESSIONID"). // 登出同時清除 cookies
 			and().
-			rememberMe()
-				.rememberMeParameter("remember") //from的忘記我欄位name
-				.key("uniqueAndSecret")
-				.tokenValiditySeconds(86400).//設定有效時間 ，預設是兩周，這裡設置為1天
+			rememberMe().
+				rememberMeParameter("remember"). //from的忘記我欄位name
+				key("uniqueAndSecret").
+				rememberMeCookieName("remember").
+				tokenValiditySeconds(86400).//設定有效時間 ，預設是兩周，這裡設置為1天
 			and().
 			csrf().
 			// 預設開啟 CSRF 功能, 需設定 csrfTokenRepository() 以存取 CsrfToken 進行驗證
 			//csrfTokenRepository(new HttpSessionCsrfTokenRepository());
 			disable(); // 關閉 CSRF 防護
-	}
-
-	@Bean("authenticationManager")
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
 	}
 
 	@Bean
