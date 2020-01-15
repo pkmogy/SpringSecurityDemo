@@ -45,7 +45,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 			anyRequest().hasAnyRole("ADMIN", "USER"). // 其它全部的路徑都得經過使用者驗證後才可以存取
 			and().
 			formLogin(). // 使用 Form Login 登入驗證
-			//loginPage("/login"). // 自定義登入頁面
+			loginPage("/login"). // 自定義登入頁面
 			permitAll(). // 允許所有人請求
 			//.loginProcessingUrl("/login") // 對應自定義登入頁面的 action URI
 			defaultSuccessUrl("/"). // 登入成功後導向的URI
@@ -59,7 +59,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 			invalidateHttpSession(true). // 登出時是否 invalidate HttpSession
 			deleteCookies("JSESSIONID"). // 登出同時清除 cookies
 			and().
-			rememberMe().key("uniqueAndSecret").tokenValiditySeconds(86400).//記住我功能，有效時間預設是兩周，這裡設置為1天
+			rememberMe().rememberMeParameter("remember-new").key("uniqueAndSecret").tokenValiditySeconds(86400).//記住我功能，有效時間預設是兩周，這裡設置為1天
 			and().
 			csrf().
 			// 預設開啟 CSRF 功能, 需設定 csrfTokenRepository() 以存取 CsrfToken 進行驗證
