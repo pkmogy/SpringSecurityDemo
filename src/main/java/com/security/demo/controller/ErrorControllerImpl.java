@@ -22,25 +22,34 @@ public class ErrorControllerImpl implements ErrorController {
 	@RequestMapping("/error")
 	public ModelAndView handleError(HttpServletRequest request) throws Exception {
 		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
-		Element documentElement = document.getDocumentElement();
 
-		Object errorStatusCode = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-		String viewName = "error";
+		String errorStatusCode = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE).toString();
+//		String viewName = "error";
 
-		if (errorStatusCode == null) {
-			viewName.concat("unknown");
-		} else {
-			Integer statusCode = Integer.valueOf(errorStatusCode.toString());
+//		Integer statusCode = Integer.valueOf(errorStatusCode);
+//		
+//		switch(statusCode){
+//			case  403:
+//				viewName = statusCode.toString();
+//			case  404:
+//				viewName = statusCode.toString();
+//				break; 
+//				
+//		}
+//		if (errorStatusCode == null) {
+//			viewName.concat("unknown");
+//		} else {
+//			Integer statusCode = Integer.valueOf(errorStatusCode.toString());
+//
+//			if (statusCode == HttpStatus.NOT_FOUND.value()) {
+//				viewName = statusCode.toString();
+//			}
+//			if (statusCode == HttpStatus.FORBIDDEN.value()) {
+//				viewName = statusCode.toString();
+//			}
+//		}
 
-			if (statusCode == HttpStatus.NOT_FOUND.value()) {
-				viewName = statusCode.toString();
-			}
-			if (statusCode == HttpStatus.FORBIDDEN.value()) {
-				viewName = statusCode.toString();
-			}
-		}
-
-		ModelAndView modelAndView = new ModelAndView(viewName);
+		ModelAndView modelAndView = new ModelAndView(errorStatusCode);
 		modelAndView.getModelMap().addAttribute(new DOMSource(document));
 		return modelAndView;
 	}
