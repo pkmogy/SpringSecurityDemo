@@ -45,22 +45,22 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 			anyRequest().hasAnyRole("ADMIN", "USER"). // 其它全部的路徑都得經過使用者驗證後才可以存取
 			and().
 			formLogin(). // 使用 Form Login 登入驗證
-			loginPage("/login"). // 自定義登入頁面
+			loginPage("/login.aspx"). // 自定義登入頁面
 			permitAll(). // 允許所有人請求
 			//.loginProcessingUrl("/login") // 對應自定義登入頁面的 action URI
-			defaultSuccessUrl("/"). // 登入成功後導向的URI
+			//defaultSuccessUrl("/"). // 登入成功後導向的URI
 			and().
 			logout().
 			// 如開啟CSRF功能, 會將 logout 預設為 POST, 在此設定使用任何 HTTP 方法請求(不建議)
 			//logoutRequestMatcher(new AntPathRequestMatcher("/logout")).
-			logoutUrl("/logout"). // 登出的 URL
-			logoutSuccessUrl("/login"). // 登出後的跳轉地址(預設值原為 /login?logout)
+			logoutUrl("/logout.aspx"). // 登出的 URL
+			//logoutSuccessUrl("/login"). // 登出後的跳轉地址(預設值原為 /login?logout)
 			permitAll().
 			invalidateHttpSession(true). // 登出時是否 invalidate HttpSession
 			deleteCookies("JSESSIONID"). // 登出同時清除 cookies
 			and().
 			rememberMe()
-				.rememberMeParameter("remember")
+				.rememberMeParameter("remember") //from的忘記我欄位name
 				.key("uniqueAndSecret")
 				.tokenValiditySeconds(86400).//設定有效時間 ，預設是兩周，這裡設置為1天
 			and().
