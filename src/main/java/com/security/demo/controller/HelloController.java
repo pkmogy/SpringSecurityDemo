@@ -1,7 +1,10 @@
 package com.security.demo.controller;
 
+import com.security.demo.entity.SystemMessage;
+import com.security.demo.repository.SystemMessageRepository;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +21,18 @@ import org.w3c.dom.Document;
 @RequestMapping("/")
 public class HelloController {
 
+	@Autowired
+	SystemMessageRepository systemMessageRepository;
+
 	@GetMapping(produces = MediaType.TEXT_PLAIN_VALUE, path = "")
 	@ResponseBody
 	String index() throws Exception {
-		return "";
+		StringBuilder stringBuilder = new StringBuilder("message");
+		for (SystemMessage systemMessage : systemMessageRepository.findAll()) {
+			stringBuilder.append(":");
+			stringBuilder.append(systemMessage.getContent());
+		}
+		return stringBuilder.toString();
 	}
 
 	@GetMapping("login.aspx")
