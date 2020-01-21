@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,7 +42,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 			authorizeRequests().
 			antMatchers("/registration/", "/registration/confirm", "/registration/resendToken", "/talent/forgetPassword").permitAll(). // 允許所有人請求
 			//antMatchers().hasAuthority("CHANGE_PASSWORD_PRIVILEGE").
-			anyRequest().hasAnyRole("ADMIN", "USER"). // 其它全部的路徑都得經過使用者驗證後才可以存取
+			//anyRequest().hasAnyRole("ADMIN", "USER"). // 其它全部的路徑都得經過使用者驗證後才可以存取
 			and().
 			formLogin(). // 使用 Form Login 登入驗證
 			loginPage("/login.aspx"). // 自定義登入頁面
@@ -59,14 +60,21 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 			deleteCookies("JSESSIONID"). // 登出同時清除 cookies
 			and().
 			rememberMe().
-				rememberMeParameter("remember"). //from的忘記我欄位name
-				key("uniqueAndSecret"). //組成 cookie 的加密字串
-				rememberMeCookieName("remember").
-				tokenValiditySeconds(86400).//設定有效時間 ，預設是兩周，這裡設置為1天
+			rememberMeParameter("remember"). //from的忘記我欄位name
+			key("uniqueAndSecret"). //組成 cookie 的加密字串
+			rememberMeCookieName("remember").
+			tokenValiditySeconds(86400).//設定有效時間 ，預設是兩周，這裡設置為1天
+			and().
+			sessionManagement().
+			sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).//設定Session策略
+			invalidSessionUrl("/login.aspx?session").//Session失效，重定向到可配置的URL
+			//典型session修復攻擊的保護-Session fixation
+			sessionFixation().
+			migrateSession().
 			and().
 			csrf().disable(); // 關閉 CSRF 防護
-			// 預設開啟 CSRF 功能, 需設定 csrfTokenRepository() 以存取 CsrfToken 進行驗證
-			//csrfTokenRepository(new HttpSessionCsrfTokenRepository());
+		// 預設開啟 CSRF 功能, 需設定 csrfTokenRepository() 以存取 CsrfToken 進行驗證
+		//csrfTokenRepository(new HttpSessionCsrfTokenRepository());
 	}
 
 	@Bean

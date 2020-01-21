@@ -45,4 +45,5 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 		slr.setDefaultLocale(Locale.TAIWAN);
 		return slr;
 	}
+	
 }

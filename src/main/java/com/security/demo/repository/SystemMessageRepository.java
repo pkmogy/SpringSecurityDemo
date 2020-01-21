@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PostFilter;
  */
 public interface SystemMessageRepository extends JpaRepository<SystemMessage, Long> {
 
+	
 	@PostFilter("hasPermission(filterObject, 'READ')")
 	List<SystemMessage> findAll();
 }
