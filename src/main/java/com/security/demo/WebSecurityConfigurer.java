@@ -1,7 +1,10 @@
 package com.security.demo;
 
+import com.security.demo.service.ConnectionSignupImpl;
+import com.security.demo.service.SignInAdapterImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +14,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository;
+import org.springframework.social.connect.web.ProviderSignInController;
 
 /**
  *
@@ -18,10 +25,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 @Configuration
 @EnableWebSecurity
+@ComponentScan(basePackages = {"com.security.demo.service"})
 public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private UserDetailsService userDetailsService;
+
+//	@Autowired
+//	private ConnectionFactoryLocator connectionFactoryLocator;
+//
+//	@Autowired
+//	private UsersConnectionRepository usersConnectionRepository;
+//
+//	@Autowired
+//	private ConnectionSignupImpl connectionSignupImpl;
 
 	/**
 	 *
@@ -40,7 +57,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.
 			authorizeRequests().
-			antMatchers("/registration/", "/registration/confirm", "/registration/resendToken", "/talent/forgetPassword").permitAll(). // 允許所有人請求
+			antMatchers("/registration/", "/registration/confirm", "/registration/resendToken", "/talent/forgetPassword", "/signin/**", "/signup/**").permitAll(). // 允許所有人請求
 			//antMatchers().hasAuthority("CHANGE_PASSWORD_PRIVILEGE").
 			//anyRequest().hasAnyRole("ADMIN", "USER"). // 其它全部的路徑都得經過使用者驗證後才可以存取
 			and().
@@ -81,4 +98,16 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+
+	//FB登入
+//	@Bean
+//	public ProviderSignInController providerSignInController() {
+//		((InMemoryUsersConnectionRepository) usersConnectionRepository)
+//			.setConnectionSignUp(connectionSignupImpl);
+//
+//		return new ProviderSignInController(
+//			connectionFactoryLocator,
+//			usersConnectionRepository,
+//			new SignInAdapterImpl());
+//	}
 }

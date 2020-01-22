@@ -41,6 +41,14 @@ public class HelloController {
 		}
 		return stringBuilder.toString();
 	}
+	
+	@GetMapping("page")
+	public ModelAndView page() throws Exception {
+		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
+		ModelAndView modelAndView = new ModelAndView("page");
+		modelAndView.getModelMap().addAttribute(new DOMSource(document));
+		return modelAndView;
+	}
 
 	@GetMapping("login.aspx")
 	public ModelAndView login() throws Exception {

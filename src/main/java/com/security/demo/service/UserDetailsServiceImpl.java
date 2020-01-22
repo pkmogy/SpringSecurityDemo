@@ -31,6 +31,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Autowired
 	private HttpServletRequest request;
 
+	public UserDetailsServiceImpl() {
+		super();
+	}
+
 	/**
 	 *
 	 * @param email
@@ -51,7 +55,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		if (someone == null) {
 			throw new UsernameNotFoundException("No user found with username: " + email);
 		}
-		
+
 		boolean verfied = someone.isVerified();
 //		boolean accountNonExpired = true;
 //		boolean credentialsNonExpired = true;

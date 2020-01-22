@@ -9,7 +9,6 @@
 	/>
 
 	<xsl:template match="/">
-		<xsl:text disable-output-escaping="yes">&#60;!DOCTYPE HTML&#62;</xsl:text>
 		<HTML lang="zh-TW">
 			<HEAD>
 				<TITLE>會員登入</TITLE>
@@ -37,5 +36,9 @@
 			
 			<BUTTON type="submit" class="btn btn-primary">送出</BUTTON>
 		</FORM>
+		<form action="/signin/facebook" method="POST">
+			<input type="hidden" name="scope" value="public_profile" />
+			<input type="submit" value="Login using Facebook"/>
+		</form>
 	</xsl:template>
 </xsl:stylesheet>
