@@ -1,8 +1,12 @@
 package com.security.demo.controller;
 
+import com.security.demo.entity.Someone;
 import com.security.demo.entity.SystemMessage;
+import com.security.demo.repository.SomeoneRepository;
+import static com.security.demo.repository.SomeoneRepository.hasTag;
 import com.security.demo.repository.SystemMessageRepository;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import javax.servlet.http.HttpSession;
@@ -30,6 +34,9 @@ public class HelloController {
 	@Autowired
 	SystemMessageRepository systemMessageRepository;
 
+	@Autowired
+	SomeoneRepository someoneRepository;
+
 	@Secured({"ROLE_ADMIN"})
 	@GetMapping(produces = MediaType.TEXT_PLAIN_VALUE, path = "")
 	@ResponseBody
@@ -41,7 +48,7 @@ public class HelloController {
 		}
 		return stringBuilder.toString();
 	}
-	
+
 	@GetMapping("page")
 	public ModelAndView page() throws Exception {
 		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("classpath:/skeleton/index.xml");
@@ -77,6 +84,29 @@ public class HelloController {
 		}
 
 		System.err.println("The ID of this fucking session is:\t" + session.getId() + "!!!");
+		return stringBuilder.toString();
+	}
+
+	@GetMapping(path = "criteria", produces = MediaType.TEXT_PLAIN_VALUE)
+	@ResponseBody
+	public String criteria(@RequestParam(defaultValue = "") String name) throws Exception {
+		StringBuilder stringBuilder = new StringBuilder();
+		List<String> tag = Arrays.asList(name.split("\\s"));
+		
+//		for (Someone someone : someoneRepository.findAll(hasTag(tag))) {
+//			stringBuilder.
+//				append(someone.getNickname()).
+//				append(":").
+//				append(someone.getEmail()).
+//				append("\n");
+//		}
+		for (Someone someone : someoneRepository.findSomeoneByNickname(name)) {
+			stringBuilder.
+				append(someone.getNickname()).
+				append(":").
+				append(someone.getEmail()).
+				append("\n");
+		}
 		return stringBuilder.toString();
 	}
 }
