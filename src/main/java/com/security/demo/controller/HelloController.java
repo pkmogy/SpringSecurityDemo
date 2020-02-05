@@ -3,12 +3,14 @@ package com.security.demo.controller;
 import com.security.demo.entity.Someone;
 import com.security.demo.entity.SystemMessage;
 import com.security.demo.repository.SomeoneRepository;
-import static com.security.demo.repository.SomeoneRepository.hasTag;
 import com.security.demo.repository.SystemMessageRepository;
+import com.security.demo.specification.SomeoneSpecifications;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.servlet.http.HttpSession;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -17,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -87,20 +90,20 @@ public class HelloController {
 		return stringBuilder.toString();
 	}
 
-	@GetMapping(path = "criteria", produces = MediaType.TEXT_PLAIN_VALUE)
+	@PostMapping(path = "criteria", produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
 	public String criteria(@RequestParam(defaultValue = "") String name) throws Exception {
 		StringBuilder stringBuilder = new StringBuilder();
-		List<String> tag = Arrays.asList(name.split("\\s"));
-		
-//		for (Someone someone : someoneRepository.findAll(hasTag(tag))) {
-//			stringBuilder.
-//				append(someone.getNickname()).
-//				append(":").
-//				append(someone.getEmail()).
-//				append("\n");
-//		}
-		for (Someone someone : someoneRepository.findSomeoneByNickname(name)) {
+		Set<String> titles = new HashSet(Arrays.asList(name.split("\\s")));
+		Set<String> tags = new HashSet();
+		for (String title : titles) {
+			if (title.charAt(0) == '*') {
+				String str = title.substring(1);
+				titles.remove(str);
+				tags.add(str);
+			}
+		}
+		for (Someone someone : someoneRepository.findAll(SomeoneSpecifications.likeNickname(titles, tags))) {
 			stringBuilder.
 				append(someone.getNickname()).
 				append(":").

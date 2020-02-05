@@ -57,7 +57,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.
 			authorizeRequests().
-			antMatchers("/registration/", "/registration/confirm", "/registration/resendToken", "/talent/forgetPassword", "/signin/**", "/signup/**").permitAll(). // 允許所有人請求
+			antMatchers("/criteria","/registration/", "/registration/confirm", "/registration/resendToken", "/talent/forgetPassword", "/signin/**", "/signup/**").permitAll(). // 允許所有人請求
 			//antMatchers().hasAuthority("CHANGE_PASSWORD_PRIVILEGE").
 			//anyRequest().hasAnyRole("ADMIN", "USER"). // 其它全部的路徑都得經過使用者驗證後才可以存取
 			and().
