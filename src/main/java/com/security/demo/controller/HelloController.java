@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -92,24 +93,31 @@ public class HelloController {
 
 	@PostMapping(path = "criteria", produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
-	public String criteria(@RequestParam(defaultValue = "") String name) throws Exception {
+	public String criteria(@RequestParam(defaultValue = "") String queryString, HttpServletRequest request) throws Exception {
 		StringBuilder stringBuilder = new StringBuilder();
-		Set<String> titles = new HashSet(Arrays.asList(name.split("\\s")));
-		Set<String> tags = new HashSet();
-		for (String title : titles) {
-			if (title.charAt(0) == '*') {
-				String str = title.substring(1);
-				titles.remove(str);
-				tags.add(str);
+		List<String> vocabularies = Arrays.asList(queryString.split("\\s"));
+		Set<String> names = new HashSet(), tags = new HashSet();
+		for (String vocabulary : vocabularies) {
+			if (vocabulary.matches("^[#].*$")) {
+				tags.add(vocabulary.replaceAll("^[#]", ""));
+			} else {
+				names.add(vocabulary);
 			}
 		}
-		for (Someone someone : someoneRepository.findAll(SomeoneSpecifications.likeNickname(titles, tags))) {
-			stringBuilder.
-				append(someone.getNickname()).
-				append(":").
-				append(someone.getEmail()).
-				append("\n");
+		for (String name : names) {
+			System.err.println(name);
 		}
+		System.err.println("queryString=================================================" + queryString + "!");
+		for (String tag : tags) {
+			System.err.println(tag);
+		}
+//		for (Someone someone : someoneRepository.findAll(SomeoneSpecifications.likeNickname(titles, tags))) {
+//			stringBuilder.
+//				append(someone.getNickname()).
+//				append(":").
+//				append(someone.getEmail()).
+//				append("\n");
+//		}
 		return stringBuilder.toString();
 	}
 }
