@@ -104,20 +104,20 @@ public class HelloController {
 				names.add(vocabulary);
 			}
 		}
-		for (String name : names) {
-			System.err.println(name);
-		}
-		System.err.println("queryString=================================================" + queryString + "!");
-		for (String tag : tags) {
-			System.err.println(tag);
-		}
-//		for (Someone someone : someoneRepository.findAll(SomeoneSpecifications.likeNickname(titles, tags))) {
-//			stringBuilder.
-//				append(someone.getNickname()).
-//				append(":").
-//				append(someone.getEmail()).
-//				append("\n");
+//		for (String name : names) {
+//			System.err.println(name);
 //		}
+//		System.err.println("queryString=================================================" + queryString + "!");
+//		for (String tag : tags) {
+//			System.err.println(tag);
+//		}
+		for (Someone someone : someoneRepository.findAll(SomeoneSpecifications.likeNickname(names, tags))) {
+			stringBuilder.
+				append(someone.getNickname()).
+				append(":").
+				append(someone.getEmail()).
+				append("\n");
+		}
 		return stringBuilder.toString();
 	}
 }
